@@ -70,35 +70,52 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
       backgroundColor: Colors.transparent,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.only(top: 8, bottom: 32),
+          padding: const EdgeInsets.only(top: 0, bottom: 32),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-                child: Text(
-                  'Resumen Semanal',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: -0.5,
-                    color: theme.colorScheme.onSurface,
-                  ),
+              Container(
+                width: double.infinity,
+                color: Colors.white,
+                padding: const EdgeInsets.fromLTRB(24, 40, 24, 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text.rich(
+                      TextSpan(
+                        style: TextStyle(
+                          fontSize: 36,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: -0.6,
+                          height: 1.1,
+                          color: const Color(0xFF0F172A),
+                        ),
+                        children: [
+                          const TextSpan(text: 'Resumen '),
+                          TextSpan(
+                            text: 'Semanal',
+                            style: TextStyle(
+                              color: theme.colorScheme.primary,
+                            ),
+                          ),
+                        ],
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      week.display,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFF64748B),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                child: Text(
-                  week.display,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ),
+              const SizedBox(height: 16),
               if (activeId == null)
                 _buildEmptyCard(theme)
               else if (summaryAsync == null)
@@ -253,7 +270,11 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
         children: [
           const Text(
             'Registro semanal',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF0F172A),
+            ),
           ),
           const SizedBox(height: 24),
           IntrinsicHeight(
@@ -340,7 +361,11 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
         children: [
           const Text(
             'Análisis Inteligente',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF0F172A),
+            ),
           ),
           const SizedBox(height: 12),
           if (insights.isEmpty)
@@ -363,7 +388,7 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
               return Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (i > 0) const AdaptiveDivider(),
+                  if (i > 0) const SizedBox(height: 12),
                   AllergenInsightItem(
                     allergenName: insight.allergenName,
                     description: insight.description,
@@ -378,10 +403,10 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
 
   Widget _buildExportButton(WidgetRef ref, ThemeData theme) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: SizedBox(
         width: double.infinity,
-        height: 50,
+        height: 52,
         child: AdaptiveButton(
           onTap: () {
             ref.read(currentScreenProvider.notifier).state =
@@ -390,10 +415,13 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
           child: const Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.picture_as_pdf, size: 20),
+              Icon(Icons.picture_as_pdf_outlined, size: 20),
               SizedBox(width: 8),
               Text('Exportar Reporte',
-                  style: TextStyle(fontWeight: FontWeight.w600)),
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                  )),
             ],
           ),
         ),
@@ -412,10 +440,10 @@ class _SummaryScreenState extends ConsumerState<SummaryScreen>
             width: 36,
             height: 36,
             decoration: BoxDecoration(
-              color: theme.colorScheme.primary.withValues(alpha: 0.12),
+              color: const Color(0xFFD1EAD9).withValues(alpha: 0.4),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(CupertinoIcons.lightbulb_fill,
+            child: Icon(CupertinoIcons.lightbulb,
                 color: theme.colorScheme.primary, size: 20),
           ),
           const SizedBox(width: 12),

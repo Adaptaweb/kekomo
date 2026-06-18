@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 
 class AppTheme {
-  static ThemeData lightTheme = ThemeData(
-    useMaterial3: true,
+  static final ThemeData lightTheme = _buildTheme(
     brightness: Brightness.light,
     colorScheme: const ColorScheme.light(
       primary: AppColors.androidLightPrimary,
@@ -18,11 +18,10 @@ class AppTheme {
       outline: AppColors.lightOutline,
       outlineVariant: AppColors.lightOutlineVariant,
     ),
-    scaffoldBackgroundColor: AppColors.lightBackground,
+    background: AppColors.lightBackground,
   );
 
-  static ThemeData darkTheme = ThemeData(
-    useMaterial3: true,
+  static final ThemeData darkTheme = _buildTheme(
     brightness: Brightness.dark,
     colorScheme: const ColorScheme.dark(
       primary: AppColors.darkPrimary,
@@ -39,8 +38,26 @@ class AppTheme {
       outline: AppColors.darkOutline,
       outlineVariant: AppColors.darkOutlineVariant,
     ),
-    scaffoldBackgroundColor: AppColors.darkBackground,
+    background: AppColors.darkBackground,
   );
+
+  static ThemeData _buildTheme({
+    required Brightness brightness,
+    required ColorScheme colorScheme,
+    required Color background,
+  }) {
+    final base = ThemeData(
+      useMaterial3: true,
+      brightness: brightness,
+      colorScheme: colorScheme,
+      scaffoldBackgroundColor: background,
+    );
+    final outfitFamily = GoogleFonts.outfit().fontFamily;
+    return base.copyWith(
+      textTheme: base.textTheme.apply(fontFamily: outfitFamily),
+      primaryTextTheme: base.primaryTextTheme.apply(fontFamily: outfitFamily),
+    );
+  }
 
   static final _solidLightColorScheme = const ColorScheme.light(
     primary: AppColors.androidLightPrimary,
@@ -69,6 +86,12 @@ class AppTheme {
     brightness: Brightness.light,
     colorScheme: _solidLightColorScheme,
     scaffoldBackgroundColor: AppColors.androidLightBackground,
+    textTheme: ThemeData.light()
+        .textTheme
+        .apply(fontFamily: GoogleFonts.outfit().fontFamily),
+    primaryTextTheme: ThemeData.light()
+        .primaryTextTheme
+        .apply(fontFamily: GoogleFonts.outfit().fontFamily),
     cardTheme: CardThemeData(
       color: AppColors.androidLightSurface,
       elevation: 2,
@@ -170,6 +193,12 @@ class AppTheme {
     brightness: Brightness.dark,
     colorScheme: _solidDarkColorScheme,
     scaffoldBackgroundColor: AppColors.androidDarkBackground,
+    textTheme: ThemeData.dark()
+        .textTheme
+        .apply(fontFamily: GoogleFonts.outfit().fontFamily),
+    primaryTextTheme: ThemeData.dark()
+        .primaryTextTheme
+        .apply(fontFamily: GoogleFonts.outfit().fontFamily),
     cardTheme: CardThemeData(
       color: AppColors.androidDarkSurface,
       elevation: 2,

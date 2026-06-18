@@ -39,10 +39,12 @@ class _ProfileButtonState extends ConsumerState<ProfileButton> {
         duration: const Duration(milliseconds: 140),
         curve: Curves.easeOutCubic,
         child: Material(
-          elevation: widget.elevation,
-          shadowColor: theme.colorScheme.primary.withValues(alpha: 0.4),
-          shape: const CircleBorder(),
-          color: theme.colorScheme.surface,
+          elevation: 4,
+          shadowColor: Colors.black.withValues(alpha: 0.10),
+          shape: CircleBorder(
+            side: BorderSide(color: Colors.white, width: 4),
+          ),
+          color: const Color(0xFFC7E6D5),
           child: SizedBox(
             width: widget.size,
             height: widget.size,
@@ -97,13 +99,13 @@ class _ProfileButtonState extends ConsumerState<ProfileButton> {
 
   Widget _buildCategoryIcon(ThemeData theme, Profile profile) {
     final svgAsset = _getCategorySvg(profile.category);
-    
+
     return Container(
       width: widget.size,
       height: widget.size,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         shape: BoxShape.circle,
-        color: theme.colorScheme.primary,
+        color: Color(0xFFC7E6D5),
       ),
       alignment: Alignment.center,
       child: SvgPicture.asset(

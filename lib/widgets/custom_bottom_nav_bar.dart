@@ -30,17 +30,17 @@ class CustomBottomNavBar extends StatelessWidget {
     ),
     NavTabItem(
       icon: CupertinoIcons.calendar,
-      activeIcon: CupertinoIcons.calendar_circle_fill,
+      activeIcon: CupertinoIcons.calendar,
       label: 'Calendario',
     ),
     NavTabItem(
-      icon: CupertinoIcons.chart_bar,
-      activeIcon: CupertinoIcons.chart_bar_fill,
+      icon: CupertinoIcons.chart_bar_alt_fill,
+      activeIcon: CupertinoIcons.chart_bar_square_fill,
       label: 'Resumen',
     ),
     NavTabItem(
-      icon: CupertinoIcons.settings,
-      activeIcon: CupertinoIcons.settings_solid,
+      icon: CupertinoIcons.gear,
+      activeIcon: CupertinoIcons.gear_solid,
       label: 'Ajustes',
     ),
   ];
@@ -53,59 +53,37 @@ class CustomBottomNavBar extends StatelessWidget {
     this.profileButtonSize = 60,
   });
 
+  static const _inactiveIcon = Color(0xFF9CA3AF);
+  static const _inactiveLabel = Color(0xFF64748B);
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final brightness = theme.brightness;
     final activeColor = theme.colorScheme.primary;
-    final inactiveColor = theme.colorScheme.onSurfaceVariant;
-    final onActiveColor = theme.colorScheme.onPrimary;
 
-    const barHeight = 76.0;
-    const horizontalPadding = 12.0;
-    const centerGap = 12.0;
+    const barHeight = 72.0;
+    const centerGap = 8.0;
+    const pillSize = 68.0;
 
     final activeIndex = currentIndex;
 
-    final tabRow = Padding(
-      padding: const EdgeInsets.fromLTRB(horizontalPadding, 0, horizontalPadding, 0),
-      child: Row(
-        children: [
-          _TabContent(
-            item: tabs[0],
-            isActive: activeIndex == 0,
-            onTap: () => onTabSelected(0),
-            activeColor: activeColor,
-            inactiveColor: inactiveColor,
-            onActiveColor: onActiveColor,
-          ),
-          _TabContent(
-            item: tabs[1],
-            isActive: activeIndex == 1,
-            onTap: () => onTabSelected(1),
-            activeColor: activeColor,
-            inactiveColor: inactiveColor,
-            onActiveColor: onActiveColor,
-          ),
-          SizedBox(width: profileButtonSize + centerGap),
-          _TabContent(
-            item: tabs[2],
-            isActive: activeIndex == 2,
-            onTap: () => onTabSelected(2),
-            activeColor: activeColor,
-            inactiveColor: inactiveColor,
-            onActiveColor: onActiveColor,
-          ),
-          _TabContent(
-            item: tabs[3],
-            isActive: activeIndex == 3,
-            onTap: () => onTabSelected(3),
-            activeColor: activeColor,
-            inactiveColor: inactiveColor,
-            onActiveColor: onActiveColor,
+    final tabRow = Row(
+      children: [
+        for (int i = 0; i < tabs.length; i++) ...[
+          if (i == 2) SizedBox(width: profileButtonSize + centerGap),
+          Expanded(
+            child: _TabContent(
+              item: tabs[i],
+              isActive: activeIndex == i,
+              onTap: () => onTabSelected(i),
+              activeColor: activeColor,
+              inactiveIconColor: _inactiveIcon,
+              inactiveLabelColor: _inactiveLabel,
+            ),
           ),
         ],
-      ),
+      ],
     );
 
     final barContents = LayoutBuilder(
@@ -113,9 +91,6 @@ class CustomBottomNavBar extends StatelessWidget {
         final w = constraints.maxWidth;
         final gap = profileButtonSize + centerGap;
         final tabW = (w - gap) / 4;
-        final pillW = tabW * 0.88;
-        final pillH = barHeight * 0.88;
-        final topOffset = (barHeight - pillH) / 2;
 
         final centers = <double>[
           tabW * 0.5,
@@ -125,7 +100,9 @@ class CustomBottomNavBar extends StatelessWidget {
         ];
 
         final clampedIndex = activeIndex == null ? -1 : activeIndex.clamp(0, 3);
-        final leftPos = clampedIndex < 0 ? -1000.0 : centers[clampedIndex] - pillW / 2;
+        final leftPos =
+            clampedIndex < 0 ? -1000.0 : centers[clampedIndex] - pillSize / 2;
+        final pillTopOffset = (barHeight - pillSize) / 2;
 
         return Stack(
           clipBehavior: Clip.none,
@@ -137,18 +114,18 @@ class CustomBottomNavBar extends StatelessWidget {
               builder: (context, animatedLeft, _) {
                 return Positioned(
                   left: animatedLeft,
-                  top: topOffset,
-                  width: pillW,
-                  height: pillH,
+                  top: pillTopOffset,
+                  width: pillSize,
+                  height: pillSize,
                   child: IgnorePointer(
                     child: DecoratedBox(
                       decoration: BoxDecoration(
                         color: activeColor,
-                        borderRadius: BorderRadius.circular(22),
+                        borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: activeColor.withValues(alpha: 0.35),
-                            blurRadius: 14,
+                            color: activeColor.withValues(alpha: 0.30),
+                            blurRadius: 12,
                             offset: const Offset(0, 4),
                           ),
                         ],
@@ -177,18 +154,14 @@ class CustomBottomNavBar extends StatelessWidget {
           )
         : Container(
             height: barHeight,
-            decoration: BoxDecoration(
-              color: theme.colorScheme.surface,
-              borderRadius: BorderRadius.circular(28),
-              border: Border.all(
-                color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
-                width: 0.6,
-              ),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.06),
-                  blurRadius: 20,
-                  offset: const Offset(0, 4),
+                  color: Color(0x14000000),
+                  blurRadius: 15,
+                  offset: Offset(0, -4),
                 ),
               ],
             ),
@@ -199,9 +172,9 @@ class CustomBottomNavBar extends StatelessWidget {
       top: false,
       minimum: const EdgeInsets.only(bottom: 8),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
         child: SizedBox(
-          height: 96,
+          height: barHeight + 24,
           child: Stack(
             clipBehavior: Clip.none,
             alignment: Alignment.bottomCenter,
@@ -229,53 +202,55 @@ class _TabContent extends StatelessWidget {
   final bool isActive;
   final VoidCallback onTap;
   final Color activeColor;
-  final Color inactiveColor;
-  final Color onActiveColor;
+  final Color inactiveIconColor;
+  final Color inactiveLabelColor;
 
   const _TabContent({
     required this.item,
     required this.isActive,
     required this.onTap,
     required this.activeColor,
-    required this.inactiveColor,
-    required this.onActiveColor,
+    required this.inactiveIconColor,
+    required this.inactiveLabelColor,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: onTap,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            AnimatedSwitcher(
-              duration: const Duration(milliseconds: 240),
-              transitionBuilder: (child, animation) => ScaleTransition(
-                scale: animation,
-                child: FadeTransition(opacity: animation, child: child),
-              ),
-              child: Icon(
-                isActive ? item.activeIcon : item.icon,
-                key: ValueKey(isActive),
-                size: 24,
-                color: isActive ? onActiveColor : inactiveColor,
-              ),
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 240),
+            transitionBuilder: (child, animation) => ScaleTransition(
+              scale: animation,
+              child: FadeTransition(opacity: animation, child: child),
             ),
-            const SizedBox(height: 3),
-            AnimatedDefaultTextStyle(
-              duration: const Duration(milliseconds: 240),
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-                color: isActive ? onActiveColor : inactiveColor,
-              ),
-              child: Text(item.label),
+            child: Icon(
+              isActive ? item.activeIcon : item.icon,
+              key: ValueKey(isActive),
+              size: 22,
+              color: isActive ? Colors.white : inactiveIconColor,
             ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 4),
+          AnimatedDefaultTextStyle(
+            duration: const Duration(milliseconds: 240),
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
+              color: isActive ? Colors.white : inactiveLabelColor,
+            ),
+            child: Text(
+              item.label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
       ),
     );
   }

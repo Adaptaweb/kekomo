@@ -11,7 +11,7 @@ import '../providers/settings_provider.dart';
 import '../theme/theme_style.dart';
 import '../widgets/adaptive_button.dart';
 import '../widgets/adaptive_widgets.dart';
-import '../widgets/allergen_chip.dart';
+import '../widgets/allergen_selector.dart';
 import '../widgets/settings_toggle_row.dart';
 import '../widgets/category_selector.dart';
 import '../data/allergen_knowledge_base.dart';
@@ -28,7 +28,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final _picker = ImagePicker();
   String _selectedCategory = 'Padre';
   String? _profilePhotoPath;
-  final Set<String> _selectedAllergens = {};
+  Set<String> _selectedAllergens = {};
   bool _isCreating = false;
 
   final _commonAllergens = List<String>.from(allergenCategories);
@@ -37,16 +37,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   void dispose() {
     _nameController.dispose();
     super.dispose();
-  }
-
-  void _toggleAllergen(String name) {
-    setState(() {
-      if (_selectedAllergens.contains(name)) {
-        _selectedAllergens.remove(name);
-      } else {
-        _selectedAllergens.add(name);
-      }
-    });
   }
 
   @override
@@ -79,56 +69,63 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       body: SafeArea(
         top: canPop ? false : true,
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+          padding: const EdgeInsets.only(bottom: 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const SizedBox(height: 8),
-              Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+              Container(
+                width: double.infinity,
+                color: Colors.white,
+                padding: const EdgeInsets.fromLTRB(24, 40, 24, 24),
+                child: Column(
                   children: [
-                    SvgPicture.asset(
-                      'assets/logo.svg',
-                      width: 48,
-                      height: 48,
-                      fit: BoxFit.contain,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SvgPicture.asset(
+                          'assets/logo.svg',
+                          width: 40,
+                          height: 40,
+                          fit: BoxFit.contain,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Bienvenido a ',
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -0.5,
+                            color: const Color(0xFF0F172A),
+                          ),
+                        ),
+                        Flexible(
+                          child: SvgPicture.asset(
+                            'assets/logo_text.svg',
+                            height: 28,
+                            fit: BoxFit.contain,
+                            alignment: Alignment.centerLeft,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(height: 16),
                     Text(
-                      'Bienvenido a ',
-                      style: TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: -0.5,
-                        color: theme.colorScheme.onSurface,
-                      ),
-                    ),
-                    Flexible(
-                      child: SvgPicture.asset(
-                        'assets/logo_text.svg',
-                        height: 32,
-                        fit: BoxFit.contain,
-                        alignment: Alignment.centerLeft,
+                      isFirstProfile
+                          ? 'Comencemos creando tu primer perfil.\nPodrás crear varios perfiles desde la app'
+                          : 'Completa los datos para añadir un nuevo perfil.',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        height: 1.35,
+                        color: Color(0xFF64748B),
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 20),
-              Text(
-                isFirstProfile
-                    ? 'Comencemos creando tu primer perfil.\nPodrás crear varios perfiles desde la app'
-                    : 'Completa los datos para añadir un nuevo perfil.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 15,
-                  height: 1.35,
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
               const _SectionHeader(title: 'CREAR PERFIL'),
               AdaptiveCard(
                 margin: const EdgeInsets.symmetric(vertical: 6),
@@ -220,74 +217,69 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'Alérgenos',
+                      'Alérgenos Conocidos',
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
+                        color: Color(0xFF0F172A),
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        ..._commonAllergens.map((allergen) {
-                          final isSelected =
-                              _selectedAllergens.contains(allergen);
-                          return AllergenChip(
-                            label: allergen,
-                            isSelected: isSelected,
-                            onTap: () => _toggleAllergen(allergen),
-                          );
-                        }),
-                      ],
+                    const SizedBox(height: 14),
+                    AllergenSelector(
+                      selected: _selectedAllergens,
+                      onChanged: (s) {
+                        setState(() {
+                          _selectedAllergens = Set<String>.from(s);
+                        });
+                      },
+                      allergens: _commonAllergens,
                     ),
-                    if (isFirstProfile) ...[
-                      const SizedBox(height: 16),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 4),
-                        child: AdaptiveDivider(),
-                      ),
-                      const SizedBox(height: 8),
-                      SettingsToggleRow(
-                        icon: Icons.dark_mode,
-                        title: 'Modo oscuro',
-                        value: themeMode == ThemeModeSetting.dark,
-                        onChanged: (v) {
-                          ref
-                              .read(settingsNotifierProvider.notifier)
-                              .updateThemeMode(
-                                v
-                                    ? ThemeModeSetting.dark
-                                    : ThemeModeSetting.light,
-                              );
-                        },
-                        isLast: true,
-                      ),
-                    ],
                   ],
                 ),
               ),
+              if (isFirstProfile)
+                AdaptiveCard(
+                  margin: const EdgeInsets.symmetric(vertical: 6),
+                  padding: EdgeInsets.zero,
+                  child: SettingsToggleRow(
+                    icon: Icons.dark_mode,
+                    title: 'Modo oscuro',
+                    value: themeMode == ThemeModeSetting.dark,
+                    onChanged: (v) {
+                      ref
+                          .read(settingsNotifierProvider.notifier)
+                          .updateThemeMode(
+                            v
+                                ? ThemeModeSetting.dark
+                                : ThemeModeSetting.light,
+                          );
+                    },
+                    isLast: true,
+                  ),
+                ),
               const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                child: AdaptiveButton(
-                  height: 56,
-                  onTap: _isCreating ? null : _onStart,
-                  child: _isCreating
-                      ? const SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(strokeWidth: 2.5),
-                        )
-                      : const Text(
-                          'EMPEZAR',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 0.5,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: AdaptiveButton(
+                    height: 52,
+                    onTap: _isCreating ? null : _onStart,
+                    child: _isCreating
+                        ? const SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(strokeWidth: 2.5),
+                          )
+                        : const Text(
+                            'EMPEZAR',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.5,
+                            ),
                           ),
-                        ),
+                  ),
                 ),
               ),
             ],

@@ -10,7 +10,7 @@ import '../providers/allergen_provider.dart';
 import '../providers/profile_provider.dart';
 import 'adaptive_widgets.dart';
 import 'allergen_badge.dart';
-import 'allergen_chip.dart';
+import 'allergen_selector.dart';
 import 'category_selector.dart';
 import 'adaptive_button.dart';
 import '../data/allergen_knowledge_base.dart';
@@ -436,7 +436,7 @@ class _Expanded extends StatelessWidget {
     final primary = theme.colorScheme.primary;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -480,7 +480,7 @@ class _Expanded extends StatelessWidget {
                         ),
                       ),
                       child: Icon(
-                        Icons.camera_alt,
+                        Icons.camera_alt_outlined,
                         size: 14,
                         color: theme.colorScheme.onPrimary,
                       ),
@@ -539,52 +539,22 @@ class _Expanded extends StatelessWidget {
             'Alérgenos Conocidos',
             style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
           ),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              for (final name in commonAllergens)
-                AllergenChip(
-                  label: name,
-                  isSelected: selectedAllergens.contains(name),
-                  onTap: () => onToggleAllergen(name),
-                ),
-            ],
-          ),
-          const SizedBox(height: 24),
-          Row(
-            children: [
-              Expanded(
-                child: AdaptiveButton(
-                  label: 'Cancelar',
-                  icon: Icons.close,
-                  onTap: onCancel,
-                  variant: AdaptiveButtonVariant.pill,
-                  backgroundColor:
-                      theme.colorScheme.surfaceContainerHighest,
-                  foregroundColor: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: SizedBox(
-                  height: 44,
-                  child: AdaptiveButton(
-                    onTap: onSave,
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.check, size: 16, color: Colors.white),
-                        SizedBox(width: 6),
-                        Text('Guardar'),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
+          const SizedBox(height: 14),
+          AllergenSelector(
+            selected: selectedAllergens,
+            onChanged: (next) {
+              for (final name in commonAllergens) {
+                final wasIn = selectedAllergens.contains(name);
+                final isIn = next.contains(name);
+                if (wasIn != isIn) {
+                  onToggleAllergen(name);
+                }
+              }
+            },
+            allergens: commonAllergens,
+            showFooter: true,
+            onSave: onSave,
+            onCancel: onCancel,
           ),
         ],
       ),

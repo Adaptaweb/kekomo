@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/models/meal_schedule.dart';
 import 'adaptive_widgets.dart';
-import 'leading_icon_box.dart';
 import 'meal_time_picker_sheet.dart';
-import 'section_divider.dart';
 
 class MealRangeEditor extends ConsumerWidget {
-  final IconData icon;
+  final String icon;
   final String mealName;
   final MealTimeRange range;
   final bool enabled;
@@ -24,105 +22,103 @@ class MealRangeEditor extends ConsumerWidget {
     this.isLast = false,
   });
 
-  static const _mealIcons = {
-    'Desayuno': Icons.free_breakfast,
-    'Almuerzo': Icons.lunch_dining,
-    'Once': Icons.coffee,
-    'Cena': Icons.dinner_dining,
+  static const _mealEmojis = {
+    'Desayuno': '☕',
+    'Almuerzo': '🍔',
+    'Once': '☕',
+    'Cena': '🍽️',
   };
 
-  static IconData iconFor(String meal) => _mealIcons[meal] ?? Icons.restaurant;
+  static String emojiFor(String meal) => _mealEmojis[meal] ?? '🍽️';
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final primary = theme.colorScheme.primary;
     final disabledColor =
         theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5);
-    final iconFg =
-        enabled ? primary : primary.withValues(alpha: 0.5);
     final nameColor =
-        enabled ? theme.colorScheme.onSurface : disabledColor;
+        enabled ? const Color(0xFF0F172A) : disabledColor;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          child: Row(
-            children: [
-              LeadingIconBox(icon: icon, color: iconFg),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  mealName,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: nameColor,
-                  ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      child: Row(
+        children: [
+          Text(
+            icon,
+            style: TextStyle(
+              fontSize: 24,
+              color: enabled
+                  ? null
+                  : Colors.black.withValues(alpha: 0.4),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              mealName,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: nameColor,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          if (enabled) ...[
+            MealTimeChip(
+              label: _formatTime(range.startHour, range.startMinute),
+              onTap: () => _pick(
+                context,
+                isStart: true,
+                initial: TimeOfDay(
+                  hour: range.startHour,
+                  minute: range.startMinute,
                 ),
               ),
-              const SizedBox(width: 12),
-              if (enabled) ...[
-                MealTimeChip(
-                  label: _formatTime(range.startHour, range.startMinute),
-                  onTap: () => _pick(
-                    context,
-                    isStart: true,
-                    initial: TimeOfDay(
-                      hour: range.startHour,
-                      minute: range.startMinute,
-                    ),
-                  ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Text(
+                '-',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Text(
-                    '-',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
+              ),
+            ),
+            MealTimeChip(
+              label: _formatTime(range.endHour, range.endMinute),
+              onTap: () => _pick(
+                context,
+                isStart: false,
+                initial: TimeOfDay(
+                  hour: range.endHour,
+                  minute: range.endMinute,
                 ),
-                MealTimeChip(
-                  label: _formatTime(range.endHour, range.endMinute),
-                  onTap: () => _pick(
-                    context,
-                    isStart: false,
-                    initial: TimeOfDay(
-                      hour: range.endHour,
-                      minute: range.endMinute,
-                    ),
-                  ),
+              ),
+            ),
+          ] else
+            Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE5E7EB),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                'Sin horario',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: disabledColor,
                 ),
-              ] else
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.surfaceContainerHigh
-                        .withValues(alpha: 0.5),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    'Sin horario',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: disabledColor,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
-        if (!isLast) const SectionDivider(),
-      ],
+              ),
+            ),
+        ],
+      ),
     );
   }
 
@@ -175,24 +171,27 @@ class MealTimeChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(10),
         onTap: onTap,
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
-            color: theme.colorScheme.surfaceContainerHigh,
-            borderRadius: BorderRadius.circular(8),
+            color: const Color(0xFFD1EAD9).withValues(alpha: 0.4),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: const Color(0xFFD1EAD9).withValues(alpha: 0.6),
+              width: 0.5,
+            ),
           ),
           child: Text(
             label,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: theme.colorScheme.onSurface,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF334155),
             ),
           ),
         ),

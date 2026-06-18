@@ -682,19 +682,73 @@ class AdaptiveDialog {
     return showDialog<T>(
       context: context,
       barrierColor: barrierColor,
-      builder: (ctx) => AlertDialog(
-        title: Text(title),
-        content: content,
-        actions: actions.map((a) => TextButton(
-          onPressed: a.onPressed,
-          child: Text(
-            a.label,
-            style: a.isPrimary
-                ? TextStyle(fontWeight: FontWeight.w600, color: Theme.of(ctx).colorScheme.primary)
-                : null,
+      builder: (ctx) {
+        final theme = Theme.of(ctx);
+        return AlertDialog(
+          title: Text(title),
+          content: content,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
           ),
-        )).toList(),
-      ),
+          actionsAlignment: MainAxisAlignment.spaceBetween,
+          actionsPadding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
+          actions: actions
+              .map((a) => Expanded(
+                    child: SizedBox(
+                      height: 48,
+                      child: a.isPrimary
+                          ? FilledButton(
+                              onPressed: a.onPressed,
+                              style: FilledButton.styleFrom(
+                                backgroundColor: theme.colorScheme.primary,
+                                foregroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(24),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16),
+                              ),
+                              child: Text(
+                                a.label,
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            )
+                          : TextButton(
+                              onPressed: a.onPressed,
+                              style: TextButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(24),
+                                  side: const BorderSide(
+                                    color: Color(0xFFE5E7EB),
+                                    width: 1.5,
+                                  ),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16),
+                              ),
+                              child: Text(
+                                a.label,
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFF64748B),
+                                ),
+                              ),
+                            ),
+                    ),
+                  ))
+              .toList()
+              .expand((w) sync* {
+            yield w;
+            yield const SizedBox(width: 12);
+          })
+          .toList()
+        ..removeLast(),
+        );
+      },
     );
   }
 }

@@ -14,7 +14,6 @@ import '../providers/reaction_provider.dart';
 import '../providers/settings_provider.dart';
 import '../data/models/meal_log.dart';
 import '../theme/theme_style.dart';
-import '../widgets/adaptive_button.dart';
 import '../widgets/adaptive_widgets.dart';
 import '../widgets/meal_time_picker_sheet.dart';
 import '../widgets/meal_photo_preview.dart';
@@ -67,31 +66,57 @@ class _TodayScreenState extends ConsumerState<TodayScreen>
         child: CustomScrollView(
           slivers: [
             SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Container(
+                width: double.infinity,
+                color: Colors.white,
+                padding: const EdgeInsets.fromLTRB(24, 40, 24, 24),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(
-                      selectedDate == todayStr
-                          ? 'Mi Registro Diario'
-                          : 'Editando: $selectedDate',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 34,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: -0.5,
+                    if (selectedDate == todayStr)
+                      Text.rich(
+                        TextSpan(
+                          style: TextStyle(
+                            fontSize: 36,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: -0.6,
+                            height: 1.1,
+                            color: const Color(0xFF0F172A),
+                          ),
+                          children: [
+                            const TextSpan(text: 'Mi '),
+                            TextSpan(
+                              text: 'Registro',
+                              style: TextStyle(
+                                color: theme.colorScheme.primary,
+                              ),
+                            ),
+                            const TextSpan(text: ' Diario'),
+                          ],
+                        ),
+                        textAlign: TextAlign.center,
+                      )
+                    else
+                      Text(
+                        'Editando: $selectedDate',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: -0.5,
+                          color: Color(0xFF0F172A),
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 2),
+                    const SizedBox(height: 4),
                     Text(
                       selectedDate == todayStr
                           ? DateFormat("d 'de' MMMM", 'es').format(now)
                           : _formatDate(selectedDate),
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 15,
-                        color: theme.colorScheme.onSurfaceVariant,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: const Color(0xFF64748B),
                       ),
                     ),
                   ],
@@ -333,21 +358,21 @@ class _MealCardState extends ConsumerState<_MealCard> {
   final _picker = ImagePicker();
   final _saveRowKey = GlobalKey();
 
-  static const _mealIcons = {
-    'Desayuno': Icons.free_breakfast,
-    'Almuerzo': Icons.lunch_dining,
-    'Once': Icons.coffee,
-    'Cena': Icons.dinner_dining,
-    'Colaciones': Icons.cookie_outlined,
+  static const _mealEmojis = {
+    'Desayuno': '☕',
+    'Almuerzo': '🍔',
+    'Once': '☕',
+    'Cena': '🍽️',
+    'Colaciones': '🍪',
   };
 
-  ({IconData icon, String range}) _mealInfoFor(String meal) {
+  ({String emoji, String range}) _mealInfoFor(String meal) {
     if (meal == 'Colaciones') {
-      return (icon: _mealIcons[meal]!, range: 'Sin Horario');
+      return (emoji: _mealEmojis[meal]!, range: 'Sin Horario');
     }
     final schedule = ref.watch(mealScheduleProvider);
     final range = schedule.forMeal(meal).formatLabel();
-    return (icon: _mealIcons[meal]!, range: range);
+    return (emoji: _mealEmojis[meal]!, range: range);
   }
 
   @override
@@ -403,9 +428,10 @@ class _MealCardState extends ConsumerState<_MealCard> {
     final canSave = (ref.watch(activeInputTextProvider)[widget.mealType] ?? '').trim().length >= 3;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
         child: AdaptiveCard(
-          borderRadius: const BorderRadius.all(Radius.circular(16)),
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+          borderRadius: const BorderRadius.all(Radius.circular(20)),
           borderColor: hasReaction ? theme.colorScheme.error.withValues(alpha: 0.4) : null,
           child: ConstrainedBox(
             constraints: const BoxConstraints(minHeight: 56),
@@ -416,57 +442,71 @@ class _MealCardState extends ConsumerState<_MealCard> {
                 onTap: () => widget.onToggle(),
                 behavior: HitTestBehavior.opaque,
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Icon(info.icon,
-                        color: theme.colorScheme.primary, size: 22),
-                    const SizedBox(width: 10),
-                    Text(
-                      widget.mealType,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
+                    Flexible(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            info.emoji,
+                            style: const TextStyle(fontSize: 16, height: 1.0),
+                          ),
+                          const SizedBox(width: 12),
+                          Flexible(
+                            child: Text(
+                              widget.mealType,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: -0.3,
+                                color: Color(0xFF0F172A),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                     ),
-                    const Spacer(),
-                    Text(
-                      info.range,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                    if (widget.isActive) ...[
-                      const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.primary
-                              .withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: const Text(
-                          'Ahora',
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
+                    const SizedBox(width: 8),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        if (widget.isActive) ...[
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: const Color.fromARGB(255, 224, 241, 215),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: const Text(
+                              'AHORA',
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w800,
+                                color: Color(0xFF475569),
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                        ],
+                        Text(
+                          info.range,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xFF94A3B8),
                           ),
                         ),
-                      ),
-                    ],
-                    const SizedBox(width: 4),
-                    AnimatedRotation(
-                      duration: const Duration(milliseconds: 200),
-                      turns: widget.isExpanded ? 0.5 : 0,
-                      child: Icon(
-                        Icons.keyboard_arrow_down,
-                        size: 22,
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
+                      ],
                     ),
                   ],
                 ),
@@ -478,24 +518,50 @@ class _MealCardState extends ConsumerState<_MealCard> {
                     : CrossFadeState.showFirst,
                 firstChild: const SizedBox(width: double.infinity, height: 0),
                 secondChild: Padding(
-                  padding: const EdgeInsets.only(top: 12),
+                  padding: const EdgeInsets.only(top: 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      AdaptiveDivider(),
-                      const SizedBox(height: 12),
-                      AdaptiveTextField(
+                      TextField(
                         controller: _textController,
                         focusNode: _focusNode,
-                        placeholder: _placeholderFor(widget.mealType),
-                        maxLines: 3,
+                        minLines: 4,
+                        maxLines: 6,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Color(0xFF0F172A),
+                        ),
+                        decoration: InputDecoration(
+                          hintText: _placeholderFor(widget.mealType),
+                          hintStyle: const TextStyle(
+                            color: Color(0xFF94A3B8),
+                            fontSize: 14,
+                          ),
+                          filled: true,
+                          fillColor: Colors.white,
+                          contentPadding: const EdgeInsets.all(16),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: const BorderSide(
+                              color: Color(0xFFE2E8F0),
+                              width: 1,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide(
+                              color: theme.colorScheme.primary,
+                              width: 1.5,
+                            ),
+                          ),
+                        ),
                         onChanged: (v) {
                           ref
                               .read(activeInputTextProvider.notifier)
                               .update(widget.mealType, v);
                         },
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 14),
                       // Fila: [CameraButton] [Miniatura + +N] — alineada a la izquierda
                       Row(
                         children: [
@@ -503,7 +569,7 @@ class _MealCardState extends ConsumerState<_MealCard> {
                             onTap: () => _showInputMethodSheet(context),
                             isGlass: isGlass,
                           ),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: 10),
                           Expanded(
                             child: PhotoInlinePreview(
                               profileId: widget.profileId,
@@ -513,9 +579,7 @@ class _MealCardState extends ConsumerState<_MealCard> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 14),
-                      AdaptiveDivider(),
-                      const SizedBox(height: 14),
+                      const SizedBox(height: 16),
                       Row(
                         key: _saveRowKey,
                         children: [
@@ -526,11 +590,11 @@ class _MealCardState extends ConsumerState<_MealCard> {
                               isGlass: isGlass,
                             ),
                           ),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: 10),
                           Expanded(
-                            child: AdaptiveButton(
-                              onTap: canSave ? () => _saveMealLog() : null,
-                              child: const Text('Guardar'),
+                            child: _SaveButton(
+                              enabled: canSave,
+                              onTap: () => _saveMealLog(),
                             ),
                           ),
                         ],
@@ -539,7 +603,7 @@ class _MealCardState extends ConsumerState<_MealCard> {
                   ),
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 14),
               logsAsync.when(
                  data: (logs) {
                    final filtered = logs
@@ -1108,7 +1172,7 @@ class _CameraButton extends StatelessWidget {
   Widget build(BuildContext context) {
     if (isGlass) {
       return GlassButton(
-        icon: const Icon(Icons.camera_alt),
+        icon: const Icon(Icons.camera_alt_outlined),
         onTap: onTap,
         width: 48,
         height: 48,
@@ -1117,7 +1181,7 @@ class _CameraButton extends StatelessWidget {
     }
     return IconButton.filled(
       onPressed: onTap,
-      icon: const Icon(Icons.camera_alt, size: 22),
+      icon: const Icon(Icons.camera_alt_outlined, size: 22),
       style: IconButton.styleFrom(
         minimumSize: const Size(48, 48),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
@@ -1149,26 +1213,41 @@ class _LogItem extends ConsumerWidget {
       padding: const EdgeInsets.only(bottom: 8),
       child: Material(
         color: Colors.transparent,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
         child: InkWell(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(24),
           onTap: () => _showActionSheet(context),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: theme.colorScheme.primaryContainer.withValues(alpha: 0.4),
-              borderRadius: BorderRadius.circular(20),
+              color: const Color(0xFFD1EAD9).withValues(alpha: 0.4),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(
+                color: const Color(0xFFD1EAD9).withValues(alpha: 0.6),
+                width: 0.5,
+              ),
             ),
             child: Row(
               children: [
-                Icon(Icons.circle, size: 10, color: dotColor),
-                const SizedBox(width: 12),
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    color: dotColor,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     log.foodItemsText,
-                    style: theme.textTheme.bodyMedium?.copyWith(
+                    style: const TextStyle(
+                      fontSize: 14,
                       fontWeight: FontWeight.w500,
+                      color: Color(0xFF334155),
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 if (log.loggedAt != null) ...[
@@ -1190,12 +1269,13 @@ class _LogItem extends ConsumerWidget {
                   GestureDetector(
                     behavior: HitTestBehavior.opaque,
                     onTap: () => _pickAndSaveTime(context),
-                    child: Text(
+                    child: const Text(
                       'Sin hora registrada',
                       style: TextStyle(
-                        fontSize: 11,
+                        fontSize: 12,
                         fontStyle: FontStyle.italic,
-                        color: theme.colorScheme.onSurfaceVariant,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFF94A3B8),
                       ),
                     ),
                   ),
@@ -1456,26 +1536,67 @@ class _EditLogSheetState extends State<_EditLogSheet> {
                 placeholder: 'Comida',
               ),
               const SizedBox(height: 24),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
+              Row(
                 children: [
-                  AdaptiveButton(
-                    label: 'Guardar',
-                    icon: Icons.check,
-                    onTap: _save,
-                    variant: AdaptiveButtonVariant.pill,
-                    backgroundColor: theme.colorScheme.primary,
-                    foregroundColor: Colors.white,
+                  Expanded(
+                    child: SizedBox(
+                      height: 48,
+                      child: TextButton.icon(
+                        onPressed: () => Navigator.pop(context),
+                        icon: const Icon(
+                          Icons.close,
+                          color: Color(0xFF64748B),
+                          size: 20,
+                        ),
+                        label: const Text(
+                          'Cancelar',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF64748B),
+                          ),
+                        ),
+                        style: TextButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(24),
+                            side: const BorderSide(
+                              color: Color(0xFFE5E7EB),
+                              width: 1.5,
+                            ),
+                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                        ),
+                      ),
+                    ),
                   ),
-                  AdaptiveButton(
-                    label: 'Cancelar',
-                    icon: Icons.close,
-                    onTap: () => Navigator.pop(context),
-                    variant: AdaptiveButtonVariant.pill,
-                    backgroundColor:
-                        theme.colorScheme.surfaceContainerHighest,
-                    foregroundColor: theme.colorScheme.onSurfaceVariant,
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: SizedBox(
+                      height: 48,
+                      child: FilledButton.icon(
+                        onPressed: _save,
+                        icon: const Icon(
+                          Icons.check,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                        label: const Text(
+                          'Guardar',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                          ),
+                        ),
+                        style: FilledButton.styleFrom(
+                          backgroundColor: theme.colorScheme.primary,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(24),
+                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -1498,123 +1619,151 @@ class _ReactionButton extends StatelessWidget {
     required this.isGlass,
   });
 
+  static const _red = Color(0xFFEF4444);
+  static const _redBorder = Color(0xFFFEE2E2);
+
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final red = theme.colorScheme.error;
-
     if (hasReaction) {
-      if (isGlass) {
-        return GlassButton.custom(
+      return SizedBox(
+        height: 48,
+        child: Material(
+          color: _red,
+          borderRadius: BorderRadius.circular(16),
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(16),
+            child: const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.warning_amber_rounded,
+                      size: 18, color: Colors.white),
+                  SizedBox(width: 8),
+                  Flexible(
+                    child: Text(
+                      'Reacción Registrada',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return SizedBox(
+      height: 48,
+      child: Material(
+        color: Colors.transparent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: const BorderSide(color: _redBorder, width: 1.5),
+        ),
+        child: InkWell(
           onTap: onTap,
-          style: GlassButtonStyle.prominent,
-          shape: const LiquidRoundedSuperellipse(borderRadius: 14),
-          height: 44,
-          glowColor: red.withValues(alpha: 0.4),
+          borderRadius: BorderRadius.circular(16),
           child: const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 12),
+            padding: EdgeInsets.symmetric(horizontal: 16),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.warning, size: 18, color: CupertinoColors.white),
-                SizedBox(width: 6),
+                Icon(Icons.warning_amber_rounded,
+                    size: 18, color: _red),
+                SizedBox(width: 8),
                 Flexible(
                   child: Text(
-                    'Reacción Registrada',
+                    'Reacción',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: CupertinoColors.white),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: _red,
+                    ),
                   ),
                 ),
               ],
             ),
           ),
-        );
-      }
-      return FilledButton(
-        onPressed: onTap,
-        style: FilledButton.styleFrom(
-          backgroundColor: red,
-          foregroundColor: theme.colorScheme.onError,
-          minimumSize: const Size(0, 44),
-          padding: const EdgeInsets.symmetric(horizontal: 12),
         ),
-        child: const Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.warning, size: 18),
-            SizedBox(width: 6),
-            Flexible(
-              child: Text(
-                'Reacción Registrada',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style:
-                    TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
-    if (isGlass) {
-      return GlassButton.custom(
-        onTap: onTap,
-        shape: const LiquidRoundedSuperellipse(borderRadius: 14),
-        height: 44,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.warning, size: 18, color: red),
-              const SizedBox(width: 6),
-              Flexible(
-                child: Text(
-                  'Reacción',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: red),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    return OutlinedButton(
-      onPressed: onTap,
-      style: OutlinedButton.styleFrom(
-        foregroundColor: red,
-        side: BorderSide(color: red.withValues(alpha: 0.3)),
-        backgroundColor:
-            theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.6),
-        minimumSize: const Size(0, 44),
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
       ),
-      child: const Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.warning, size: 18),
-          SizedBox(width: 6),
-          Flexible(
+    );
+  }
+}
+
+class _SaveButton extends ConsumerWidget {
+  final bool enabled;
+  final VoidCallback onTap;
+
+  const _SaveButton({
+    required this.enabled,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final isGlass = ref.watch(themeStyleProvider) == ThemeStyle.liquidGlass;
+    final bg = enabled
+        ? theme.colorScheme.primary
+        : const Color(0xFFE5E7EB);
+    final fg = enabled ? Colors.white : const Color(0xFF9CA3AF);
+
+    if (isGlass && enabled) {
+      return SizedBox(
+        height: 48,
+        child: GlassButton.custom(
+          onTap: onTap,
+          style: GlassButtonStyle.prominent,
+          shape: const LiquidRoundedSuperellipse(borderRadius: 16),
+          height: 48,
+          glowColor: theme.colorScheme.primary,
+          child: const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
             child: Text(
-              'Reacción',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+              'Guardar',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: CupertinoColors.white,
+              ),
             ),
           ),
-        ],
+        ),
+      );
+    }
+
+    return SizedBox(
+      height: 48,
+      child: Material(
+        color: bg,
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
+          onTap: enabled ? onTap : null,
+          borderRadius: BorderRadius.circular(16),
+          child: Center(
+            child: Text(
+              'Guardar',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: fg,
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

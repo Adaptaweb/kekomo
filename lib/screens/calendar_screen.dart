@@ -93,13 +93,13 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     final now = DateTime.now();
     final firstDay = DateTime(selectedDate.year, selectedDate.month, 1);
     final lastDay = DateTime(selectedDate.year, selectedDate.month + 1, 0);
-    final startWeekday = firstDay.weekday % 7;
+    final startWeekday = (firstDay.weekday - 1) % 7;
     final prevMonthLastDay =
         DateTime(selectedDate.year, selectedDate.month, 0).day;
 
     final monthKey = ValueKey('${selectedDate.year}-${selectedDate.month}');
     final theme = Theme.of(context);
-    const dayHeaders = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
+    const dayHeaders = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
 
     final mealCountsAsync = activeId != null
         ? ref.watch(_monthlyMealCountsProvider(_MonthlyMealArgs(
@@ -330,11 +330,7 @@ class _CalendarCard extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(8, 12, 8, 4),
           child: header,
         ),
-        Container(
-          height: 1,
-          margin: const EdgeInsets.symmetric(horizontal: 8),
-          color: theme.colorScheme.outline.withValues(alpha: 0.15),
-        ),
+        const SizedBox(height: 10),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
           child: dayHeaders,
@@ -605,7 +601,7 @@ class _DayDetailsState extends ConsumerState<_DayDetails>
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+          padding: const EdgeInsets.fromLTRB(4, 4, 4, 12),
           child: Text(
             title,
             textAlign: TextAlign.center,
@@ -613,12 +609,13 @@ class _DayDetailsState extends ConsumerState<_DayDetails>
               fontSize: 18,
               fontWeight: FontWeight.w700,
               letterSpacing: -0.3,
+              color: Color(0xFF0F172A),
             ),
           ),
         ),
         const SizedBox(height: 4),
         _buildStaggeredButton(),
-        const SizedBox(height: 4),
+        const SizedBox(height: 8),
         logsAsync.when(
           data: (logs) {
             final reactions =
@@ -639,17 +636,17 @@ class _DayDetailsState extends ConsumerState<_DayDetails>
                       curve: const Interval(0.0, 0.5, curve: Curves.easeOut),
                     ),
                     child: AdaptiveCard(
-                      margin: const EdgeInsets.symmetric(vertical: 6),
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(minHeight: 100),
-                        child: Center(
-                          child: Text(
-                            'Sin registros para este día',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontStyle: FontStyle.italic,
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
-                            ),
+                      margin: const EdgeInsets.symmetric(vertical: 5),
+                      padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+                      borderRadius: const BorderRadius.all(Radius.circular(20)),
+                      child: Center(
+                        child: Text(
+                          'Sin registros para este día',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontStyle: FontStyle.italic,
+                            fontWeight: FontWeight.w500,
+                            color: const Color(0xFF64748B),
                           ),
                         ),
                       ),
@@ -690,40 +687,96 @@ class _DayDetailsState extends ConsumerState<_DayDetails>
         );
       },
       child: AdaptiveCard(
-        margin: const EdgeInsets.symmetric(vertical: 6),
-        borderRadius: const BorderRadius.all(Radius.circular(16)),
+        margin: const EdgeInsets.symmetric(vertical: 5),
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+        borderRadius: const BorderRadius.all(Radius.circular(20)),
         borderColor:
             hasReaction ? Theme.of(context).colorScheme.error.withValues(alpha: 0.4) : null,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Icon(_mealIcons[mealType] ?? Icons.restaurant,
-                    color: Theme.of(context).colorScheme.primary, size: 22),
-                const SizedBox(width: 10),
-                Text(
-                  mealType,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                Flexible(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        _mealEmojis[mealType] ?? '🍽️',
+                        style: const TextStyle(fontSize: 24, height: 1.0),
+                      ),
+                      const SizedBox(width: 12),
+                      Flexible(
+                        child: Text(
+                          mealType,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: -0.3,
+                            color: Color(0xFF0F172A),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                 ),
-                const Spacer(),
-                Text(
-                  _mealRangeFor(mealType),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
+                const SizedBox(width: 8),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    if (hasReaction) ...[
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .error
+                              .withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.warning_amber_rounded,
+                                size: 10,
+                                color: Theme.of(context).colorScheme.error),
+                            const SizedBox(width: 4),
+                            const Text(
+                              'REACCIÓN',
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w800,
+                                color: Color(0xFFEF4444),
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                    ],
+                    Text(
+                      _mealRangeFor(mealType),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFF94A3B8),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 14),
             ...mealLogs.map((log) {
               final timeStr = log.loggedAt != null
                   ? TimeOfDay.fromDateTime(log.loggedAt!)
@@ -733,47 +786,59 @@ class _DayDetailsState extends ConsumerState<_DayDetails>
                 padding: const EdgeInsets.only(bottom: 8),
                 child: Container(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 14, vertical: 6),
+                      horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .primaryContainer
-                        .withValues(alpha: 0.4),
-                    borderRadius: BorderRadius.circular(20),
+                    color: const Color(0xFFD1EAD9).withValues(alpha: 0.4),
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(
+                      color: const Color(0xFFD1EAD9).withValues(alpha: 0.6),
+                      width: 0.5,
+                    ),
                   ),
                   child: Row(
                     children: [
-                      Icon(
-                        Icons.circle,
-                        size: 10,
-                        color: log.hasReaction
-                            ? Theme.of(context).colorScheme.tertiary
-                            : Theme.of(context).colorScheme.primary,
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: log.hasReaction
+                              ? Theme.of(context).colorScheme.tertiary
+                              : Theme.of(context).colorScheme.primary,
+                          shape: BoxShape.circle,
+                        ),
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: 10),
                       Expanded(
                         child: Text(
                           log.foodItemsText,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium
-                              ?.copyWith(fontWeight: FontWeight.w500),
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xFF334155),
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       if (timeStr != null) ...[
                         const SizedBox(width: 8),
-                        Icon(Icons.schedule,
-                            size: 12,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurfaceVariant),
-                        const SizedBox(width: 4),
                         Text(
                           timeStr,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
-                            color: Theme.of(context).colorScheme.primary,
+                            color: Color(0xFF57A37B),
+                          ),
+                        ),
+                      ] else ...[
+                        const SizedBox(width: 8),
+                        const Text(
+                          'Sin hora registrada',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontStyle: FontStyle.italic,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xFF94A3B8),
                           ),
                         ),
                       ],
@@ -847,12 +912,12 @@ class _DayDetailsState extends ConsumerState<_DayDetails>
     );
   }
 
-  static const _mealIcons = {
-    'Desayuno': Icons.free_breakfast,
-    'Almuerzo': Icons.lunch_dining,
-    'Once': Icons.coffee,
-    'Cena': Icons.dinner_dining,
-    'Colaciones': Icons.cookie_outlined,
+  static const _mealEmojis = {
+    'Desayuno': '☕',
+    'Almuerzo': '🍔',
+    'Once': '☕',
+    'Cena': '🍽️',
+    'Colaciones': '🍪',
   };
 
   String _mealRangeFor(String mealType) {
@@ -874,7 +939,7 @@ class _EditDayButton extends ConsumerWidget {
         ref.watch(themeStyleProvider) == ThemeStyle.liquidGlass;
     if (!_isPastDate(date)) return const SizedBox.shrink();
     return Padding(
-      padding: const EdgeInsets.only(top: 12),
+      padding: const EdgeInsets.only(top: 4),
       child: Center(
         child: AdaptiveFilledButton(
           onTap: () =>
@@ -883,13 +948,13 @@ class _EditDayButton extends ConsumerWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.edit_calendar,
+              Icon(Icons.edit_calendar_outlined,
                   size: 20,
                   color: isGlassLocal ? CupertinoColors.white : null),
               const SizedBox(width: 10),
               const Text('Editar día',
                   style: TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.w600)),
+                      fontSize: 15, fontWeight: FontWeight.w700)),
             ],
           ),
         ),
@@ -942,4 +1007,9 @@ Future<void> _openEditDayModal(
   ref.invalidate(reactionsByDateRangeProvider(
       ReactionDateRangeArgs(profileId: profileId, from: fromStr, to: toStr)));
   ref.invalidate(weeklySummaryProvider(profileId));
+  ref.invalidate(_monthlyMealCountsProvider(_MonthlyMealArgs(
+    profileId: profileId,
+    year: DateTime.parse(date).year,
+    month: DateTime.parse(date).month,
+  )));
 }

@@ -38,22 +38,26 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       backgroundColor: Colors.transparent,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.only(top: 8, bottom: 32),
+          padding: const EdgeInsets.only(top: 0, bottom: 32),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Padding(
-                padding: EdgeInsets.fromLTRB(16, 8, 16, 16),
-                child: Text(
+              Container(
+                width: double.infinity,
+                color: Colors.white,
+                padding: const EdgeInsets.fromLTRB(24, 40, 24, 24),
+                child: const Text(
                   'Ajustes',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 34,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: -0.5,
+                    fontSize: 36,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.6,
+                    color: Color(0xFF0F172A),
                   ),
                 ),
               ),
+              const SizedBox(height: 16),
               const ProfileSummaryCard(),
               const SizedBox(height: 4),
               const _SectionHeader(title: 'CONFIGURACIÓN DE COMIDAS'),

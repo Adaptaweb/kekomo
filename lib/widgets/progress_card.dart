@@ -149,15 +149,7 @@ class ProgressCard extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: 14),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Container(
-            height: 1,
-            color: theme.colorScheme.outline.withValues(alpha: 0.2),
-          ),
-        ),
-        const SizedBox(height: 14),
+        const SizedBox(height: 18),
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
           child: Row(
@@ -185,12 +177,7 @@ class ProgressCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: isGlass
           ? ClipRRect(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(16),
-                topRight: Radius.circular(24),
-                bottomLeft: Radius.circular(16),
-                bottomRight: Radius.circular(16),
-              ),
+              borderRadius: BorderRadius.circular(20),
               child: GlassCard(
                 padding: EdgeInsets.zero,
                 settings: RecommendedGlassSettings.forCard(theme.brightness),
@@ -200,12 +187,7 @@ class ProgressCard extends StatelessWidget {
           : Container(
               decoration: BoxDecoration(
                 color: theme.colorScheme.surface,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(16),
-                  topRight: Radius.circular(24),
-                  bottomLeft: Radius.circular(16),
-                  bottomRight: Radius.circular(16),
-                ),
+                borderRadius: BorderRadius.circular(20),
                 border: Border.all(
                   color: theme.colorScheme.outline.withValues(alpha: 0.3),
                   width: 0.5,
