@@ -1,0 +1,13 @@
+Categoría de Alérgeno	Productos Asociados  
+Leche y Lácteos	Queso, mantequilla, yogurt, crema de leche, leche condensada, caseína, suero de leche, pastel de choclo, humitas, chupe de jaiba, helados de crema, postres lácteos, vienesas industriales, paté, lactosa  
+Cereales con Gluten / Trigo	Pan (marraqueta, hallulla, molde), pasta, sopaipillas, mote, harina de trigo, cuscús, galletas, pasteles, cerveza, empanadas de pino, pizza, rebozados (pescado frito), salsa de soya, cubos de caldo, avena, cebada, centeno, espelta, masas de pizza  
+Huevo	Merengue, mayonesa, flan, leche asada, albóndigas, pastel de carne, productos empanizados, pan de huevo, pino de empanadas, productos horneados, aderezo César, huevo entero, claras, yemas, soufflés, batidos, productos de repostería  
+Soya	Salsa de soya, tofu, tempeh, edamame, miso, lecitina de soya, proteína vegetal texturizada, leche de soya, yogurt de soya, embutidos (vienesas, salchichas), cecinas, porotos de soya, aceite de soya  
+Maní / Cacahuetes	Mantequilla de maní, harina de maní, aceite de maní, mezclas de frutos secos, snacks, salsas de mole, rollitos primavera, chili, mazapán, turrón  
+Nueces y Frutos de Cáscara	Nueces, almendras, avellanas, pistachos, castañas, anacardos, pesto, gianduja (chocolate con avellana), prieta nogada, aceite de nuez, mazapán, panes integrales con semillas, mantequilla de maní, mezclas de frutos secos  
+Pescado	Merluza, salmón, congrio, atún en conserva, anchoas, salsa Worcestershire (salsa inglesa), salsa César, surimi (imitación de mariscos), caldo de pescado, sushi, pescados frescos, enlatados (jurel)  
+Mariscos / Crustáceos / Moluscos	Camarones, jaiba, centolla, langosta, choritos, almejas, ostiones, machas, pulpo, calamar, chupe de mariscos, ceviche, curanto (pulmay), paella, langostinos, caldos concentrados  
+Sulfitos	Vino, cerveza, vinagre, chancaca (almíbar de sopaipillas), huesillos (duraznos deshidratados), jugo de limón comercial, embutidos procesados, papas deshidratadas, frutas secas, conservas, alimentos procesados con aditivos  
+Sésamo / Ajonjolí	Semillas de sésamo, aceite de sésamo, tahini (hummus), halva, gomasio, panes con sésamo, colines, platos de comida oriental  
+Apio (Oculto)	Cazuela, caldos de pollo o vacuno, sopas deshidratadas, cubos de caldo concentrado, ensaladas, pastas de curry, condimentos  
+Mostaza	Semillas de mostaza, mostaza preparada, mayonesa industrial, aderezos de ensalada, marinados de carnes, pastas de curry, panes especiales

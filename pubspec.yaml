@@ -1,0 +1,77 @@
+name: kekomo_flutter
+description: "KeComo - App para almacenar y guardar alimentos consumidos para detectar posibles alérgenos."
+publish_to: 'none'
+version: 2.4.0+1
+
+environment:
+  sdk: ^3.11.5
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State management
+  flutter_riverpod: ^2.6.1
+  riverpod: ^2.6.1
+
+  # Local database
+  sqflite: ^2.4.2
+  sqflite_common_ffi_web: ^1.1.1
+  path: ^1.9.1
+
+  # Date formatting
+  intl: ^0.20.2
+
+  # PDF generation
+  pdf: ^3.11.3
+
+  # Camera / Gallery
+  image_picker: ^1.1.2
+
+  # Voice / Speech
+  speech_to_text: ^7.0.0
+
+  # File paths & sharing
+  path_provider: ^2.1.5
+  share_plus: ^10.1.4
+
+  # Icons
+  cupertino_icons: ^1.0.8
+  material_design_icons_flutter: ^7.0.7296
+  phosphor_flutter: ^2.1.0
+
+  # Glass UI - iOS 26 Liquid Glass
+  liquid_glass_widgets: ^0.15.6
+
+  # Cupertino-style time picker (wheel)
+  cupertino_calendar_picker: ^2.2.6
+
+  # SVG rendering
+  flutter_svg: ^2.0.10+1
+
+  # Localizations (required by cupertino_calendar_picker)
+  flutter_localizations:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.13.1
+
+flutter_launcher_icons:
+  image_path: "assets/icon/icon.png"
+  min_sdk_android: 21
+  android: true
+  ios: true
+  web:
+    generate: true
+    background_color: "#B6EFCF"
+    theme_color: "#B6EFCF"
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/icon/
+    - assets/logo.svg
+    - assets/logo_text.svg
